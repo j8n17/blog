@@ -5,32 +5,44 @@ import { fetchCanonical } from "./util"
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
 
-async function mouseEnterHandler(
-  this: HTMLAnchorElement,
-  { clientX, clientY }: { clientX: number; clientY: number },
-) {
-  const link = (activeAnchor = this)
-  if (link.dataset.noPopover === "true") {
-    return
-  }
+// --- Helper Functions ---
 
-  async function setPosition(popoverElement: HTMLElement) {
-    const { x, y } = await computePosition(link, popoverElement, {
+/** Computes position and sets styles for the popover */
+async function setPosition(
+  anchorElement: HTMLElement,
+  popoverElement: HTMLElement,
+  event: { clientX: number; clientY: number },
+) {
+  try {
+    const { x, y } = await computePosition(anchorElement, popoverElement, {
       strategy: "fixed",
-      middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
+      middleware: [inline({ x: event.clientX, y: event.clientY }), shift(), flip()],
     })
     Object.assign(popoverElement.style, {
       transform: `translate(${x.toFixed()}px, ${y.toFixed()}px)`,
     })
+  } catch (e) {
+    // ignore compute position errors (mostly happens when anchor is detached)
+    console.warn(`Couldn't compute position for popover: ${popoverElement.id}`, e)
   }
+}
 
-  function showPopover(popoverElement: HTMLElement) {
-    clearActivePopover()
-    popoverElement.classList.add("active-popover")
-    setPosition(popoverElement as HTMLElement)
+/** Shows the popover, clearing any existing ones */
+function showPopover(
+  popoverElement: HTMLElement,
+  anchorElement: HTMLAnchorElement,
+  event: { clientX: number; clientY: number },
+) {
+  clearActivePopover() // Clear any currently active popovers
+  popoverElement.classList.add("active-popover")
+  setPosition(anchorElement, popoverElement, event)
 
-    if (hash !== "") {
-      const targetAnchor = `#popover-internal-${hash.slice(1)}`
+  // Scroll to hash if it exists (mainly for internal link popovers)
+  const hash = decodeURIComponent(anchorElement.hash)
+  if (hash !== "") {
+    const targetAnchor = `#popover-internal-${hash.slice(1)}`
+    const popoverInner = popoverElement.querySelector(".popover-inner")
+    if (popoverInner) {
       const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
       if (heading) {
         // leave ~12px of buffer when scrolling to a heading
@@ -38,17 +50,27 @@ async function mouseEnterHandler(
       }
     }
   }
+}
+
+// --- Mouse Enter Handlers ---
+
+/** Handles mouseenter for regular internal links (fetches content) */
+async function mouseEnterHandler(this: HTMLAnchorElement, event: MouseEvent) {
+  const link = (activeAnchor = this)
+  if (link.dataset.noPopover === "true") {
+    return
+  }
 
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
   targetUrl.hash = ""
   targetUrl.search = ""
-  const popoverId = `popover-${link.pathname}`
+  const popoverId = `popover-${link.pathname}${hash.replace("#", "__")}`
   const prevPopoverElement = document.getElementById(popoverId)
 
   // dont refetch if there's already a popover
   if (!!document.getElementById(popoverId)) {
-    showPopover(prevPopoverElement as HTMLElement)
+    showPopover(prevPopoverElement as HTMLElement, link, event)
     return
   }
 
@@ -102,6 +124,7 @@ async function mouseEnterHandler(
       elts.forEach((elt) => popoverInner.appendChild(elt))
   }
 
+  // Check again if the popover was somehow created while fetching
   if (!!document.getElementById(popoverId)) {
     return
   }
@@ -111,23 +134,88 @@ async function mouseEnterHandler(
     return
   }
 
-  showPopover(popoverElement)
+  showPopover(popoverElement, link, event)
 }
 
+/** Handles mouseenter for footnote reference links */
+function footnoteMouseEnterHandler(this: HTMLAnchorElement, event: MouseEvent) {
+  const link = (activeAnchor = this)
+  const footnoteId = link.getAttribute("href")?.substring(1) // Get ID like "fn:1"
+  if (!footnoteId) return
+
+  const popoverId = `popover-${footnoteId}`
+  const prevPopoverElement = document.getElementById(popoverId)
+
+  // If popover already exists, just show it
+  if (prevPopoverElement) {
+    showPopover(prevPopoverElement, link, event)
+    return
+  }
+
+  // Find the footnote definition element
+  const footnoteDefElement = document.getElementById(footnoteId)
+  if (!footnoteDefElement) {
+    console.warn(`Footnote definition not found for ID: ${footnoteId}`)
+    return
+  }
+  
+  // Create popover elements
+  const popoverElement = document.createElement("div")
+  popoverElement.id = popoverId
+  popoverElement.classList.add("popover")
+  const popoverInner = document.createElement("div")
+  popoverInner.classList.add("popover-inner", "footnote-popover-inner") // Add specific class
+
+  // Clone the content of the footnote definition
+  // We clone the children to avoid taking the <li> itself, just its content
+  Array.from(footnoteDefElement.childNodes).forEach((node) => {
+    popoverInner.appendChild(node.cloneNode(true))
+  })
+
+  // Avoid showing the backlink in the popover if it exists
+  const backlink = popoverInner.querySelector('a[href^="#fnref:"]')
+  if (backlink instanceof HTMLElement) {
+    backlink.style.display = "none"
+  }
+
+  popoverElement.appendChild(popoverInner)
+  document.body.appendChild(popoverElement)
+
+  // Show the newly created popover
+  showPopover(popoverElement, link, event)
+}
+
+/** Hides all active popovers */
 function clearActivePopover() {
   activeAnchor = null
   const allPopoverElements = document.querySelectorAll(".popover")
   allPopoverElements.forEach((popoverElement) => popoverElement.classList.remove("active-popover"))
 }
 
+// --- Event Listener Setup ---
+
 document.addEventListener("nav", () => {
-  const links = [...document.querySelectorAll("a.internal")] as HTMLAnchorElement[]
+  // Select both internal links and footnote references
+  const links = [...document.querySelectorAll("a.internal, a[data-footnote-ref]")] as HTMLAnchorElement[]
+
   for (const link of links) {
-    link.addEventListener("mouseenter", mouseEnterHandler)
-    link.addEventListener("mouseleave", clearActivePopover)
-    window.addCleanup(() => {
-      link.removeEventListener("mouseenter", mouseEnterHandler)
-      link.removeEventListener("mouseleave", clearActivePopover)
-    })
+    // Check if it's a footnote link
+    if (link.dataset.footnoteRef !== undefined) {
+      // Footnote link
+      link.addEventListener("mouseenter", footnoteMouseEnterHandler)
+      link.addEventListener("mouseleave", clearActivePopover)
+      window.addCleanup(() => {
+        link.removeEventListener("mouseenter", footnoteMouseEnterHandler)
+        link.removeEventListener("mouseleave", clearActivePopover)
+      })
+    } else if (link.classList.contains("internal")) {
+      // Regular internal link
+      link.addEventListener("mouseenter", mouseEnterHandler)
+      link.addEventListener("mouseleave", clearActivePopover)
+      window.addCleanup(() => {
+        link.removeEventListener("mouseenter", mouseEnterHandler)
+        link.removeEventListener("mouseleave", clearActivePopover)
+      })
+    }
   }
 })

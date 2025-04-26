@@ -87,3 +87,17 @@
   animation-fill-mode: forwards;
   animation-delay: 0.2s;
 }
+
+.footnote-popover {
+  & > .popover-inner {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.9em;
+
+    p:first-child {
+      margin-top: 0;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
