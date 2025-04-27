@@ -20,6 +20,9 @@ document.addEventListener("nav", () => {
     window.addCleanup(() => readerModeButton.removeEventListener("click", switchReaderMode))
   }
 
-  // Set initial state
-  document.documentElement.setAttribute("reader-mode", isReaderMode ? "on" : "off")
+  // Set initial state based on path
+  const currentPath = window.location.pathname
+  const initialMode = currentPath.endsWith('/') ? "off" : "on";
+  isReaderMode = initialMode === "on";
+  document.documentElement.setAttribute("reader-mode", initialMode)
 })
