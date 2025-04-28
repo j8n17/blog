@@ -20,7 +20,7 @@
   }
 }
 
-:root[reader-mode="on"] {
+:root[reader-mode="on"]:not([scrolled-to-top]) {
   & .sidebar.left {
     opacity: 0;
     transition: opacity 0.2s ease;
