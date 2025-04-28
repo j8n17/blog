@@ -7,6 +7,13 @@ const emitReaderModeChangeEvent = (mode: "on" | "off") => {
   document.dispatchEvent(event)
 }
 
+const handleScroll = () => {
+  const firstH1 = document.querySelector(".breadcrumb-container");
+  const firstH1Top = firstH1 ? firstH1.getBoundingClientRect().top + window.scrollY : 100;
+  const scrolledToTop = window.scrollY <= firstH1Top;
+  document.documentElement.toggleAttribute("scrolled-to-top", scrolledToTop);
+};
+
 document.addEventListener("nav", () => {
   const switchReaderMode = () => {
     isReaderMode = !isReaderMode
@@ -19,6 +26,11 @@ document.addEventListener("nav", () => {
     readerModeButton.addEventListener("click", switchReaderMode)
     window.addCleanup(() => readerModeButton.removeEventListener("click", switchReaderMode))
   }
+
+  handleScroll();
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addCleanup(() => window.removeEventListener("scroll", handleScroll));
 
   // Set initial state based on path
   const currentPath = window.location.pathname
