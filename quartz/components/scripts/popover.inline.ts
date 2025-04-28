@@ -199,11 +199,23 @@ function footnoteMouseEnterHandler(this: HTMLAnchorElement) {
   showPopover(popoverElement, link)
 }
 
+/** Returns the ID suffix of the currently active popover, or null if none is active */
+function getActivePopoverId(): string | null {
+  const activePopover = document.querySelector(".popover.active-popover") as HTMLElement | null
+  if (activePopover && activePopover.id.startsWith("popover-")) {
+    return activePopover.id.substring("popover-".length)
+  }
+  return null
+}
+
 /** Hides all active popovers */
 function clearActivePopover() {
   activeAnchor = null
-  const allPopoverElements = document.querySelectorAll(".popover")
-  allPopoverElements.forEach((popoverElement) => popoverElement.classList.remove("active-popover"))
+  const activeId = getActivePopoverId()
+  if (activeId) {
+    const activePopoverElement = document.getElementById(`popover-${activeId}`)
+    activePopoverElement?.classList.remove("active-popover")
+  }
 }
 
 // --- Event Listener Setup ---
