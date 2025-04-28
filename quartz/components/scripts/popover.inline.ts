@@ -1,7 +1,9 @@
 import { computePosition, flip, shift, Placement } from "@floating-ui/dom"
 import { normalizeRelativeURLs } from "../../util/path"
 import { fetchCanonical } from "./util"
+import isMobile from "ismobilejs"
 
+const mobile = isMobile(window.navigator.userAgent).any
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
 
@@ -219,6 +221,40 @@ function clearActivePopover() {
 }
 
 // --- Event Listener Setup ---
+const createMobileClickHandler = (link: HTMLAnchorElement, isFootnote: boolean) => {
+  // Helper function to check if the popover for the clicked link is already active
+  const isAlreadyActiveForLink = (link: HTMLAnchorElement, isFootnote: boolean): boolean => {
+    const activeSuffix = getActivePopoverId()
+
+    if (!activeSuffix) {
+      return false
+    }
+
+    let expectedSuffix: string | null = null
+    if (isFootnote) {
+      expectedSuffix = link.getAttribute("href")?.substring(1) ?? null
+    } else {
+      const targetUrl = new URL(link.href)
+      const hash = decodeURIComponent(targetUrl.hash)
+      expectedSuffix = `${link.pathname}${hash.replace("#", "__")}`
+    }
+    return activeSuffix === expectedSuffix;
+  }
+
+  return (event: MouseEvent) => {
+    const isAlreadyActive = isAlreadyActiveForLink(link, isFootnote)
+
+    if (!isAlreadyActive) {
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      if (isFootnote) {
+        footnoteMouseEnterHandler.call(link)
+      } else {
+        mouseEnterHandler.call(link)
+      }
+    }
+  }
+}
 
 document.addEventListener("nav", () => {
   // Select both internal links and footnote references
@@ -228,20 +264,47 @@ document.addEventListener("nav", () => {
     // Check if it's a footnote link
     if (link.dataset.footnoteRef !== undefined) {
       // Footnote link
-      link.addEventListener("mouseenter", footnoteMouseEnterHandler)
-      link.addEventListener("mouseleave", clearActivePopover)
-      window.addCleanup(() => {
-        link.removeEventListener("mouseenter", footnoteMouseEnterHandler)
-        link.removeEventListener("mouseleave", clearActivePopover)
-      })
+      if (mobile) {
+        // Mobile footnote logic
+        const mobileClickHandler = createMobileClickHandler(link, true) // Pass true for footnote
+        link.addEventListener("click", mobileClickHandler)
+        window.addCleanup(() => {
+          link.removeEventListener("click", mobileClickHandler)
+        })
+      } else {
+        // Desktop footnote logic
+        link.addEventListener("mouseenter", footnoteMouseEnterHandler)
+        // link.addEventListener("mouseleave", clearActivePopover)
+        window.addCleanup(() => {
+          link.removeEventListener("mouseenter", footnoteMouseEnterHandler)
+          // link.removeEventListener("mouseleave", clearActivePopover)
+        })
+      }
     } else if (link.classList.contains("internal")) {
       // Regular internal link
-      link.addEventListener("mouseenter", mouseEnterHandler)
-      link.addEventListener("mouseleave", clearActivePopover)
-      window.addCleanup(() => {
-        link.removeEventListener("mouseenter", mouseEnterHandler)
-        link.removeEventListener("mouseleave", clearActivePopover)
-      })
+      if (mobile) {
+        // Mobile internal link logic
+        const mobileClickHandler = createMobileClickHandler(link, false) // Pass false for internal link
+        link.addEventListener("click", mobileClickHandler)
+        window.addCleanup(() => {
+          link.removeEventListener("click", mobileClickHandler)
+        })
+      } else {
+        // Desktop internal link logic
+        link.addEventListener("mouseenter", mouseEnterHandler)
+        link.addEventListener("mouseleave", clearActivePopover)
+        window.addCleanup(() => {
+          link.removeEventListener("mouseenter", mouseEnterHandler)
+          link.removeEventListener("mouseleave", clearActivePopover)
+        })
+      }
     }
   }
+  window.addEventListener("click", clearActivePopover)
+  window.addEventListener("scroll", clearActivePopover)
+
+  window.addCleanup(() => {
+    window.removeEventListener("click", clearActivePopover);
+    window.removeEventListener("scroll", clearActivePopover);
+  });
 })
