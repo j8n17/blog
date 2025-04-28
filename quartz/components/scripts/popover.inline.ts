@@ -189,9 +189,9 @@ function footnoteMouseEnterHandler(this: HTMLAnchorElement) {
   })
 
   // Avoid showing the backlink in the popover if it exists
-  const backlink = popoverInner.querySelector('a[href^="#fnref:"]')
-  if (backlink instanceof HTMLElement) {
-    backlink.style.display = "none"
+  const backlink = popoverInner.querySelector('a[data-footnote-backref]')
+  if (backlink) {
+    backlink.remove()
   }
 
   popoverElement.appendChild(popoverInner)
