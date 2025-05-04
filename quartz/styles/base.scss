@@ -254,6 +254,9 @@ a {
           display: none;
         }
       }
+      @media all and ($tablet) {
+        padding: $topSpacing 0rem 2rem 2rem;
+      }
     }
     & .page-header,
     & .page-footer {
