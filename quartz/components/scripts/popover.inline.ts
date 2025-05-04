@@ -282,7 +282,7 @@ document.addEventListener("nav", () => {
       }
     } else if (link.classList.contains("internal")) {
       // Regular internal link
-      if (mobile) {
+      if (mobile && link.classList.contains("alias")) {
         // Mobile internal link logic
         const mobileClickHandler = createMobileClickHandler(link, false) // Pass false for internal link
         link.addEventListener("click", mobileClickHandler)
