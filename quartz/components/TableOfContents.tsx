@@ -29,6 +29,25 @@ export default ((opts?: Partial<Options>) => {
       return null
     }
 
+    if (displayClass === 'mobile-only') {
+      return (
+        <div class={classNames(displayClass, "toc")}>
+          <div class="toc box-border">
+            <h3>{i18n(cfg.locale).components.tableOfContents.title}</h3>
+            <OverflowList class={fileData.collapseToc ? "collapsed toc-content" : "toc-content"}>
+              {fileData.toc.map((tocEntry) => (
+                <li key={tocEntry.slug} class={`depth-${tocEntry.depth}`}>
+                  <a href={`#${tocEntry.slug}`} data-for={tocEntry.slug} class="in-view">
+                    {tocEntry.text}
+                  </a>
+                </li>
+              ))}
+            </OverflowList>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div class={classNames(displayClass, "toc")}>
         <button
