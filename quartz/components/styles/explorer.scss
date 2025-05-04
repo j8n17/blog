@@ -1,6 +1,6 @@
 @use "../../styles/variables.scss" as *;
 
-@media all and ($mobile) {
+@media all and ($mobile), all and ($tablet) {
   .page > #quartz-body {
     // Shift page position when toggling Explorer on mobile.
     & > :not(.sidebar.left:has(.explorer)) {
@@ -46,7 +46,7 @@
     opacity: 0.8;
   }
 
-  @media all and ($mobile) {
+  @media all and ($mobile), all and ($tablet) {
     order: -1;
     height: initial;
     overflow: hidden;
@@ -64,7 +64,7 @@
     display: flex;
   }
 
-  @media all and ($mobile) {
+  @media all and ($mobile), all and ($tablet) {
     button.mobile-explorer {
       display: flex;
     }
@@ -75,7 +75,7 @@
   }
 
   &.desktop-only {
-    @media all and not ($mobile) {
+    @media all and ($desktop) {
       display: flex;
     }
   }
@@ -211,7 +211,7 @@ li:has(> .folder-outer:not(.open)) > .folder-container > svg {
 }
 
 .explorer {
-  @media all and ($mobile) {
+  @media all and ($mobile), all and ($tablet) {
     &.collapsed {
       flex: 0 0 34px;
 
@@ -264,7 +264,7 @@ li:has(> .folder-outer:not(.open)) > .folder-container > svg {
 }
 
 .mobile-no-scroll {
-  @media all and ($mobile) {
+  @media all and ($mobile), all and ($tablet) {
     overflow: hidden;
   }
 }

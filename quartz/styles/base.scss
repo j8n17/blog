@@ -222,7 +222,7 @@ a {
       z-index: 1;
       grid-area: grid-sidebar-left;
       flex-direction: column;
-      @media all and ($mobile) {
+      @media all and ($mobile), all and ($tablet) {
         gap: 0;
         align-items: center;
         position: initial;
@@ -241,8 +241,6 @@ a {
       @media all and ($mobile) {
         margin-left: inherit;
         margin-right: inherit;
-      }
-      @media all and not ($desktop) {
         position: initial;
         height: unset;
         width: 100%;
@@ -265,7 +263,7 @@ a {
     & .page-header {
       grid-area: grid-header;
       margin: $topSpacing 0 0 0;
-      @media all and ($mobile) {
+      @media all and ($mobile), all and ($tablet) {
         margin-top: 0;
         padding: 0;
       }

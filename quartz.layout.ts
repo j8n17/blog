@@ -31,6 +31,7 @@ export const defaultContentPageLayout: PageLayout = {
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),
+    Component.TabletOnly(Component.Spacer()),
     Component.Flex({
       components: [
         {
@@ -60,6 +61,7 @@ export const defaultListPageLayout: PageLayout = {
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),
+    Component.TabletOnly(Component.Spacer()),
     Component.Flex({
       components: [
         {
