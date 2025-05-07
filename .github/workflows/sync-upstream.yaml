@@ -34,7 +34,7 @@ jobs:
       - name: Sync with upstream
         run: |
           git remote add upstream "https://github.com/${{ env.UPSTREAM_REPO_OWNER }}/${{ env.UPSTREAM_REPO_NAME }}.git"
-          git fetch upstream main:sync-upstream
+          git fetch upstream v4:sync-upstream
           git push origin sync-upstream --force
 
       - name: Create Pull Request using actions/github-script
@@ -46,8 +46,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               head: 'sync-upstream',
-              base: 'main',
+              base: 'v4',
               title: '🔄 Sync with upstream',
-              body: 'This PR merges upstream/main into our main.'
+              body: 'This PR merges upstream/v4 into our v4.'
             });
             core.info(`Created PR #${pr.data.number} (mergeable_state=${pr.data.mergeable_state})`);
