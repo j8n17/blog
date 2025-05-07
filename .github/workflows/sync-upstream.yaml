@@ -1,12 +1,12 @@
 name: Sync Upstream Repository
 
 on:
-  push:
-    branches:
-      - main
-  # schedule:
-  #   # UTC 기준 금요일 20:00 → KST 토요일 05:00
-  #   - cron: '0 20 * * 5'
+  # push:
+  #   branches:
+  #     - main
+  schedule:
+    # UTC 기준 금요일 20:00 → KST 토요일 05:00
+    - cron: '0 20 * * 5'
   workflow_dispatch:
 
 env:
