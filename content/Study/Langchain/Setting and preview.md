@@ -85,9 +85,9 @@ print(f"[답변]: {response.content}")
 
 | API | 특징 | 사용 목적 |
 | :--- | :--- | :--- |
-| **Completions API** | 단일 프롬프트에 대해 한 번의 텍스트 완성을 제공. LLM의 가장 기본적인 "문장 완성" 기능. 현재는 Legacy[^1]로 취급된다. | 간단한 문장/단락 생성, 레거시 코드 유지 |
+| **Completions API** | 단일 프롬프트에 대해 한 번의 텍스트 완성을 제공. LLM의 가장 기본적인 "문장 완성" 기능. [2024년 4월](https://openai.com/index/gpt-4-api-general-availability/) Legacy로 분류되었다. | 간단한 문장/단락 생성, 레거시 코드 유지 |
 | **Chat Completions API** | 시스템, 사용자, 어시스턴트 역할을 구분하는 메시지 스택으로 대화 맥락을 유지한다. 이미지, PDF, 오디오 등 멀티모달 입력을 지원한다. | 챗봇, RAG, 멀티모달 애플리케이션 **(권장)** |
-| **Responses API** | [2025년 3월](https://openai.com/index/new-tools-for-building-agents/) 출시된 Agentic 애플리케이션 전용 API. 컨텍스트 자동 관리 및 툴 호출(tool calling)에 중점을 둔다. [5월](https://openai.com/index/new-tools-and-features-in-the-responses-api/)부터 MCP 서버, 이미지 생성, 코드 인터프리터 기능이 추가되었다. | 복잡한 워크플로, 외부 툴 연동, 에이전트 기반 시스템 |
+| **Responses API** | [2025년 3월](https://openai.com/index/new-tools-for-building-agents/) 출시된 Agentic 애플리케이션 전용 API. 컨텍스트 자동 관리 및 툴 호출(tool calling)에 중점을 둔다. [5월](https://openai.com/index/new-tools-and-features-in-the-responses-api/)부터 MCP 서버, 이미지 생성, 코드 인터프리터 기능이 추가되었다. [참고 - Chat Completions API와 비교](https://platform.openai.com/docs/guides/responses-vs-chat-completions) | 복잡한 워크플로, 외부 툴 연동, 에이전트 기반 시스템 |
 
 ## 스트리밍 응답
 
@@ -186,5 +186,3 @@ GPT-4o와 같은 최신 멀티모달 모델은 이미지, PDF, 오디오 입력�
       - 동일한 프롬프트에 대한 API 요청이 들어오면, 이전에 요청을 처리했던 서버로 라우팅된다.
       - **`cache hit`**: 해당 서버의 캐시에 동일한 프롬프트가 존재하면, 새로운 연산을 수행하지 않고 캐시된 결과를 즉시 반환한다.
       - **`cache miss`**: 캐시에 해당 프롬프트가 없으면, 기존 방식대로 API를 호출하고 결과를 반환한 뒤 캐시에 저장한다.
-
-[^1]: [2024년 4월](https://openai.com/index/gpt-4-api-general-availability/) Legacy로 분류되었다.
