@@ -1,6 +1,5 @@
 ---
-title: Welcome to Quartz
+title: Welcome to Joon's Blog
 ---
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+왼쪽 카테고리에서 글을 읽을 수 있습니다.
