@@ -1,5 +1,5 @@
 ---
-date: date: 2025-06-23 14:00
+date: 2025-06-23 14:00
 reference: https://www.pinecone.io/learn/retrieval-augmented-generation/
 ---
 > **출처:** 본 글은 Pinecone 블로그의 "[Retrieval-Augmented Generation (RAG)](https://www.pinecone.io/learn/retrieval-augmented-generation/)"를 기반으로 작성되었습니다.
