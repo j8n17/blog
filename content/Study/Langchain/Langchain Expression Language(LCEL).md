@@ -9,7 +9,7 @@ LangChain Expression Language(LCEL)는 LLM을 활용한 애플리케이션 개�
 
 ## LCEL 소개
 
-LCEL의 중심에는 'Runnable'이라는 통일된 인터페이스가 있다. 프롬프트, 모델, 출력 파서 등 모든 구성 요소를 Runnable 객체로 다루고, 이를 | 연산자로 연결하여 순차적인 데이터 흐름을 정의한다. 이는 복잡한 로직을 간결하고 가독성 높은 코드로 표현할 수 있게 한다.
+LCEL의 중심에는 'Runnable'이라는 통일된 인터페이스가 있다. 프롬프트, 모델, 출력 파서 등 모든 구성 요소를 Runnable 객체로 다루고, 이를 `|` 연산자로 연결하여 순차적인 데이터 흐름을 정의한다. 이는 복잡한 로직을 간결하고 가독성 높은 코드로 표현할 수 있게 한다.
 
 ### PromptTemplate (프롬프트 템플릿)
 
@@ -51,7 +51,7 @@ print(parsed_output)
 
 ### Chaining with Pipe Operator (파이프 연산자를 이용한 체인 구성)
 
-LCEL의 가장 큰 특징은 | 연산자를 통해 여러 Runnable 객체를 간단하게 연결할 수 있다는 점이다. `PromptTemplate`, `Model`, `OutputParser`를 순서대로 연결하면, 입력값이 각 단계를 순차적으로 거쳐 최종 결과물만 반환되는 간결한 체인을 완성할 수 있다.
+LCEL의 가장 큰 특징은 `|` 연산자를 통해 여러 Runnable 객체를 간단하게 연결할 수 있다는 점이다. `PromptTemplate`, `Model`, `OutputParser`를 순서대로 연결하면, 입력값이 각 단계를 순차적으로 거쳐 최종 결과물만 반환되는 간결한 체인을 완성할 수 있다.
 
 ```python
 chain = prompt_template | model | parser
@@ -79,6 +79,6 @@ LCEL의 모든 객체는 `Runnable` 프로토콜을 따른다. 이 프로토콜�
 
 LCEL은 두 가지 주요한 조합 방식을 제공하여 복잡한 워크플로우를 구성할 수 있게 한다.
 
-  * **RunnableSequence**: | 연산자로도 표현되며, 여러 Runnable을 순차적으로 실행하는 체인을 만든다.
+  * **RunnableSequence**: `|` 연산자로도 표현되며, 여러 Runnable을 순차적으로 실행하는 체인을 만든다.
   * **RunnableParallel**: 여러 Runnable을 병렬로 실행한 후 그 결과를 모아 다음 단계로 전달한다.
 
