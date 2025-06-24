@@ -20,7 +20,7 @@ openai_messages = [
 ]
 ```
 
-### LangChain의 `Message`
+### LangChain의 `Message` 사용 예시
 
 ```python
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -41,6 +41,8 @@ OpenAI 형식을 그대로 `ChatModel.invoke()`에 넘겨도 내부적으로 각
 response = chat_model.invoke(openai_messages)
 ```
 
+### 각 role에 대한 Message 클래스
+
 | OpenAI role | LangChain Message 클래스 |
 | ----------- | --------------------- |
 | `system`    | `SystemMessage`       |
@@ -54,7 +56,18 @@ response = chat_model.invoke(openai_messages)
     ```python
     response = chat_model.invoke("Hello, how are you?")
     ```
-* 모델 응답 역시 `Message` 객체인 `AIMessage`로 반환되며, 필요하다면 `convert_to_openai_messages()`[^2]로 **다시 OpenAI 포맷**으로 변환할 수 있다.
+* 필요하다면 직접 Message 객체를 사용하는 형식으로 바꿀 수 있다.[^2]
+    ```python
+    from langchain_core.messages.utils import convert_to_messages
+
+    openai_messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "안녕, 오늘 날씨 어때?"},
+    ]
+    lc_messages = convert_to_messages(openai_messages)
+    # -> [SystemMessage(content="You are a helpful assistant."), HumanMessage(content="안녕, 오늘 날씨 어때?")]
+    ```
+* 반대로, `convert_to_openai_messages()`로 **다시 OpenAI 포맷**으로 변환할 수 있다.[^3]
     ```python
         from langchain_core.messages import (
             convert_to_openai_messages,
@@ -81,4 +94,5 @@ response = chat_model.invoke(openai_messages)
     ```
 
 [^1]: OpenAI의 메시지 형식 중 하나
-[^2]: [https://python.langchain.com/docs/modules/model\_io/chat/quick\_start#convert-to-openai-messages](https://python.langchain.com/docs/modules/model_io/chat/quick_start#convert-to-openai-messages)
+[^2]: [onvert_to_messages docs 링크](https://python.langchain.com/api_reference/core/messages/langchain_core.messages.utils.convert_to_messages.html)
+[^3]: [convert-to-openai-messages docs 링크](https://python.langchain.com/api_reference/core/messages/langchain_core.messages.utils.convert_to_openai_messages.html)
