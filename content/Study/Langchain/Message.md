@@ -4,95 +4,55 @@ reference: https://python.langchain.com/docs/guides/chat/
 ---
 
 ## 개요
+Langchain은 여러 챗 모델(OpenAI, Anthropic 등)의 메시지 형식을 통합하여, **일관된 인터페이스**를 제공합니다. 이를 통해 다양한 모델 간 코드 재사용성을 높이고 유지보수를 쉽게 만듭니다.
 
-LangChain은 다양한 챗 모델(OpenAI, Anthropic 등)의 **메시지 포맷 차이를 추상화**하여, 개발자가 일관된 `Message` 인터페이스만으로 프롬프트를 구성할 수 있도록 돕는다.  
-이를 통해 코드 재사용성 및 유지보수성이 높아지고, 여러 모델을 교차 사용하더라도 동일한 로직을 그대로 적용할 수 있다.
+## 메시지 형식 및 사용 예시
 
-## 메세지 형식 예시
-
-### Chat Completions API[^1]
+### OpenAI 메시지 형식
 ```python
 openai_messages = [
-    {"role": "system",    "content": "You are a helpful assistant."},
-    {"role": "user",      "content": "Hello, how are you?"},
-    {"role": "assistant", "content": "I'm doing well, thank you for asking."},
-    {"role": "user",      "content": "Can you tell me a joke?"}
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Hello!"},
 ]
 ```
 
-### LangChain의 `Message` 사용 예시
-
+### Langchain 메시지 형식
 ```python
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 
-lc_messages = [
+langchain_messages = [
     SystemMessage(content="You are a helpful assistant."),
-    HumanMessage(content="Hello, how are you?"),
-    AIMessage(content="I'm doing well, thank you for asking."),
-    HumanMessage(content="Can you tell me a joke?")
+    HumanMessage(content="Hello!"),
 ]
+
+response = chat_model.invoke(langchain_messages)
 ```
 
-## Message 자동 변환
-
-OpenAI 형식을 그대로 `ChatModel.invoke()`에 넘겨도 내부적으로 각 메시지의 role에 해당하는 `Message` 객체로 변환되어 사용된다.
+> LangChain은 내부적으로 Langchain의 메시지 형식으로 변환하기 때문에 OpenAI 형식의 메시지도 처리할 수 있습니다.
 
 ```python
 response = chat_model.invoke(openai_messages)
 ```
 
-### 각 role에 대한 Message 클래스
+## 메시지 역할(role)에 따른 클래스
 
 | OpenAI role | LangChain Message 클래스 |
-| ----------- | --------------------- |
-| `system`    | `SystemMessage`       |
-| `user`      | `HumanMessage`        |
-| `assistant` | `AIMessage`           |
-| `tool`      | `ToolMessage`         |
+| ----------- | ------------------------ |
+| `system`    | `SystemMessage`          |
+| `user`      | `HumanMessage`           |
+| `assistant` | `AIMessage`              |
+| `tool`      | `ToolMessage`            |
 
 ## 참고 사항
-
-* **문자열 입력**은 role 지정이 없어도 자동으로 `HumanMessage`로 인식된다.
+* 문자열 입력은 자동으로 `HumanMessage`로 변환됩니다
     ```python
-    response = chat_model.invoke("Hello, how are you?")
+    response = chat_model.invoke("안녕하세요?")
     ```
-* 필요하다면 직접 Message 객체를 사용하는 형식으로 바꿀 수 있다.[^2]
+* 각각의 형식으로 변환이 필요할 땐 다음 함수를 사용합니다
     ```python
     from langchain_core.messages.utils import convert_to_messages
+    from langchain_core.messages import convert_to_openai_messages
 
-    openai_messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "안녕, 오늘 날씨 어때?"},
-    ]
-    lc_messages = convert_to_messages(openai_messages)
-    # -> [SystemMessage(content="You are a helpful assistant."), HumanMessage(content="안녕, 오늘 날씨 어때?")]
+    lc_messages = convert_to_messages(openai_messages) # Langchain 메시지 형식으로 변환
+    oai_messages = convert_to_openai_messages(lc_messages) # OpenAI 형식으로 변환
     ```
-* 반대로, `convert_to_openai_messages()`로 **다시 OpenAI 포맷**으로 변환할 수 있다.[^3]
-    ```python
-        from langchain_core.messages import (
-            convert_to_openai_messages,
-            AIMessage,
-            SystemMessage,
-            ToolMessage,
-        )
-
-        messages = [
-            SystemMessage([{"type": "text", "text": "foo"}]),
-            {"role": "user", "content": [{"type": "text", "text": "whats in this"}, {"type": "image_url", "image_url": {"url": "data:image/png;base64,'/9j/4AAQSk'"}}]},
-            AIMessage("", tool_calls=[{"name": "analyze", "args": {"baz": "buz"}, "id": "1", "type": "tool_call"}]),
-            ToolMessage("foobar", tool_call_id="1", name="bar"),
-            {"role": "assistant", "content": "thats nice"},
-        ]
-        oai_messages = convert_to_openai_messages(messages)
-        # -> [
-        #   {'role': 'system', 'content': 'foo'},
-        #   {'role': 'user', 'content': [{'type': 'text', 'text': 'whats in this'}, {'type': 'image_url', 'image_url': {'url': "data:image/png;base64,'/9j/4AAQSk'"}}]},
-        #   {'role': 'assistant', 'tool_calls': [{'type': 'function', 'id': '1','function': {'name': 'analyze', 'arguments': '{"baz": "buz"}'}}], 'content': ''},
-        #   {'role': 'tool', 'name': 'bar', 'content': 'foobar'},
-        #   {'role': 'assistant', 'content': 'thats nice'}
-        # ]
-    ```
-
-[^1]: OpenAI의 메시지 형식 중 하나
-[^2]: [onvert_to_messages docs 링크](https://python.langchain.com/api_reference/core/messages/langchain_core.messages.utils.convert_to_messages.html)
-[^3]: [convert-to-openai-messages docs 링크](https://python.langchain.com/api_reference/core/messages/langchain_core.messages.utils.convert_to_openai_messages.html)
