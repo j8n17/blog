@@ -6,8 +6,6 @@ reference: https://python.langchain.com/docs/guides/chat/
 ## 개요
 Langchain은 여러 공급사의 모델들(OpenAI, Anthropic 등)의 메시지 형식을 통합하여, **일관된 인터페이스**를 제공합니다. 이를 통해 다양한 모델 간 코드 재사용성을 높이고 유지보수를 쉽게 만듭니다.
 
-## 메시지 형식 및 사용 예시
-
 ## Langchain 메시지 형식
 ```python
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -33,7 +31,7 @@ openai_messages = [
 response = chat_model.invoke(openai_messages)
 ```
 
-### 메시지 역할(role)에 따른 클래스
+### role에 따른 Message 클래스
 
 | OpenAI role | LangChain Message 클래스 |
 | ----------- | ------------------------ |
