@@ -10,11 +10,13 @@ Langchain은 여러 공급사의 모델들(OpenAI, Anthropic 등)의 메시지 �
 
 ### 사용 예시
 ```python
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 langchain_messages = [
     SystemMessage(content="You are a helpful assistant."),
     HumanMessage(content="Hello!"),
+    AIMessage(content="Hey there! How’s it going? What’s on your mind today?"),
+    HumanMessage(content="I’m doing great!")
 ]
 
 response = chat_model.invoke(langchain_messages)
@@ -36,36 +38,36 @@ AI 모델의 행동 방침, 대화의 맥락, 톤 등을 설정합니다. 예를
 response = chat_model.invoke("안녕하세요?")
 ```
    
-3. AIMessage  
-   AI 모델의 응답 메시지로, 텍스트뿐 아니라 도구 호출 요청이나 멀티미디어 응답도 포함될 수 있습니다.  
-   - Standardized 속성: 다양한 모델(OpenAI, Anthopic 등)에서 공통적으로 사용할 수 있도록 표준화한 속성.  
-     - `tool_calls`: 도구 호출 정보.  
-     - `invalid_tool_calls`: 파싱 오류가 발생한 도구 호출 정보.  
-     - `usage_metadata`: 토큰 사용량 등 메타데이터.  
-     - `id`: 메시지의 id.  
-   - Raw 속성: 각 모델에서 제공하는 고유 데이터 등 표준화되지 않은 속성.
-     - `content`: (str 또는 리스트) 모델이 생성한 원시 응답 텍스트 혹은 멀티모달 콘텐츠(텍스트, 이미지, 오디오 등).  
-     - `response_metadata`: 응답 관련 추가 정보(응답 헤더, logprobs, 토큰 카운트 등).  
+#### 3. AIMessage  
+AI 모델의 응답 메시지로, 텍스트뿐 아니라 도구 호출 요청이나 멀티미디어 응답도 포함될 수 있습니다.  
+- Standardized 속성: 다양한 모델(OpenAI, Anthopic 등)에서 공통적으로 사용할 수 있도록 표준화한 속성.  
+    - `tool_calls`: 도구 호출 정보.  
+    - `invalid_tool_calls`: 파싱 오류가 발생한 도구 호출 정보.  
+    - `usage_metadata`: 토큰 사용량 등 메타데이터.  
+    - `id`: 메시지의 id.  
+- Raw 속성: 각 모델에서 제공하는 고유 데이터 등 표준화되지 않은 속성.
+    - `content`: (str 또는 리스트) 모델이 생성한 원시 응답 텍스트 혹은 멀티모달 콘텐츠(텍스트, 이미지, 오디오 등).  
+    - `response_metadata`: 응답 관련 추가 정보(응답 헤더, logprobs, 토큰 카운트 등).  
 
-4. AIMessageChunk  
-   AIMessage의 스트리밍 버전으로, 모델이 응답을 생성하는 즉시 부분적으로 반환할 때 사용합니다.  
-   참고: 여러 개의 AIMessageChunk를 `+` 연산자로 합쳐 하나의 AIMessage로 만들 수 있습니다.  
+#### 4. AIMessageChunk  
+AIMessage의 스트리밍 버전으로, 모델이 응답을 생성하는 즉시 부분적으로 반환할 때 사용합니다.  
+참고: 여러 개의 AIMessageChunk를 `+` 연산자로 합쳐 하나의 AIMessage로 만들 수 있습니다.  
 
-   ```python
-   ai_message = chunk1 + chunk2 + chunk3
-   ```
+```python
+ai_message = chunk1 + chunk2 + chunk3
+```
 
-5. ToolMessage  
-   외부 도구 호출 결과를 모델에 전달할 때 사용합니다.  
-   - 주요 속성:  
-     - `tool_call_id`: 호출된 외부 도구나 함수의 id.  
-     - `artifact`: 도구 실행 결과물(추적용, 모델에 전달 X).  
+#### 5. ToolMessage  
+외부 도구 호출 결과를 모델에 전달할 때 사용합니다.  
+- 주요 속성:  
+    - `tool_call_id`: 호출된 외부 도구나 함수의 id.  
+    - `artifact`: 도구 실행 결과물(추적용, 모델에 전달 X).  
 
-6. RemoveMessage  
-   LangGraph에서 대화 기록을 관리(삭제)할 때 사용하는 특수 메시지입니다.  
+#### 6. RemoveMessage  
+LangGraph에서 대화 기록을 관리(삭제)할 때 사용하는 특수 메시지입니다.  
 
-7. (Legacy) FunctionMessage  
-   OpenAI의 예전 function-calling API에 대응하는 메시지이며, 현재는 ToolMessage 사용이 권장됩니다.
+#### 7. (Legacy) FunctionMessage  
+OpenAI의 예전 function-calling API에 대응하는 메시지이며, 현재는 ToolMessage 사용이 권장됩니다.
 
 ## OpenAI의 Chat Completions API 형식
 
