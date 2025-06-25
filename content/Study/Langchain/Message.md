@@ -24,17 +24,17 @@ response = chat_model.invoke(langchain_messages)
 
 각 메시지 클래스는 역할(role)과 용도에 따라 구분되며, 아래와 같이 정의됩니다.
 
-1. SystemMessage  
-    AI 모델의 행동 방침, 대화의 맥락, 톤 등을 설정합니다. 예를 들어, “당신은 친절한 도우미입니다.”와 같은 지침을 제공합니다.  
+#### 1. SystemMessage 
+AI 모델의 행동 방침, 대화의 맥락, 톤 등을 설정합니다. 예를 들어, “당신은 친절한 도우미입니다.”와 같은 지침을 제공합니다.  
 
-2. HumanMessage  
-   사용자의 입력을 나타냅니다. 일반적으로 텍스트 형태이며, 일부 모델에서는 이미지나 오디오 등 멀티모달 데이터도 지원합니다.  
+#### 2. HumanMessage  
+사용자의 입력을 나타냅니다. 일반적으로 텍스트 형태이며, 일부 모델에서는 이미지나 오디오 등 멀티모달 데이터도 지원합니다.  
 
-   참고: 문자열 입력은 자동으로 HumanMessage로 변환되어 처리됩니다.
+참고: 문자열 입력은 자동으로 HumanMessage로 변환되어 처리됩니다.
 
-   ```python
-   response = chat_model.invoke("안녕하세요?")
-   ```
+```python
+response = chat_model.invoke("안녕하세요?")
+```
    
 3. AIMessage  
    AI 모델의 응답 메시지로, 텍스트뿐 아니라 도구 호출 요청이나 멀티미디어 응답도 포함될 수 있습니다.  
