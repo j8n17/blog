@@ -101,33 +101,33 @@ LCEL의 모든 객체는 `Runnable` 프로토콜을 따른다. 이 프로토콜�
 
 LCEL은 두 가지 주요한 조합 방식을 제공하여 복잡한 워크플로우를 구성할 수 있게 한다.
 
-#### RunnableSequence
-`|` 연산자로도 표현되며, 여러 Runnable을 순차적으로 실행하는 체인을 만든다.
-```python
-from langchain_core.runnables import RunnableSequence, RunnableLambda
+- **RunnableSequence**  
+  `|` 연산자로도 표현되며, 여러 Runnable을 순차적으로 실행하는 체인을 만든다.
+  ```python
+  from langchain_core.runnables import RunnableSequence, RunnableLambda
 
-add_one = RunnableLambda(lambda x: x + 1)
-multiply_two = RunnableLambda(lambda x: x * 2)
+  add_one = RunnableLambda(lambda x: x + 1)
+  multiply_two = RunnableLambda(lambda x: x * 2)
 
-# RunnableSequence로 두 함수를 순차적으로 연결
-sequence = RunnableSequence(add_one, multiply_two)
-result = sequence.invoke(3)  # ((3 + 1) * 2) = 8
+  # RunnableSequence로 두 함수를 순차적으로 연결
+  sequence = RunnableSequence(add_one, multiply_two)
+  result = sequence.invoke(3)  # ((3 + 1) * 2) = 8
 
-# | 연산자 사용
-chain = add_one | multiply_two
-result = chain.invoke(3)  # ((3 + 1) * 2) = 8
-```
+  # | 연산자 사용
+  chain = add_one | multiply_two
+  result = chain.invoke(3)  # ((3 + 1) * 2) = 8
+  ```
 
-#### RunnableParallel
-여러 Runnable(체인, 함수 등)을 병렬로 실행한 결과를 하나의 딕셔너리로 반환하는 객체
-```python
-combined = RunnableParallel(
-    capital=chain1,  # 수도를 반환하는 체인
-    area=chain2      # 면적을 반환하는 체인
-)
-combined.invoke({"country": "대한민국"})
-# {'capital': '서울입니다.', 'area': '대한민국의 총 면적은 약 100,363 km²입니다.'}
-```
+- **RunnableParallel**  
+  여러 Runnable(체인, 함수 등)을 병렬로 실행한 결과를 하나의 딕셔너리로 반환하는 객체
+  ```python
+  combined = RunnableParallel(
+      capital=chain1,  # 수도를 반환하는 체인
+      area=chain2      # 면적을 반환하는 체인
+  )
+  combined.invoke({"country": "대한민국"})
+  # {'capital': '서울입니다.', 'area': '대한민국의 총 면적은 약 100,363 km²입니다.'}
+  ```
 
 ### 그 외의 Runnable
 
