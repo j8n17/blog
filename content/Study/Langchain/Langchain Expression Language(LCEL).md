@@ -77,14 +77,14 @@ LCEL의 모든 객체는 `Runnable` 프로토콜을 따른다. 이 프로토콜�
 
 ### 입력 데이터 처리를 위한 Runnable
 
-- **RunnablePassthrough**
+- **RunnablePassthrough**  
   입력값을 그대로 다음 단계로 전달하거나, 필요에 따라 asign 메서드를 사용해 키/값을 추가할 수 있는 Runnable 객체.
   ```python
   RunnablePassthrough().invoke({"num": 10})  # {'num': 10}
   RunnablePassthrough.assign(new_num=lambda x: x["num"] * 3).invoke({"num": 1})  # {'num': 1, 'new_num': 3}
   ```
 
-- **RunnableLambda**
+- **RunnableLambda**  
   사용자 정의 함수를 체인 내에서 실행할 수 있도록 매핑하는 Runnable 객체
   ```python
   def get_today(a):
