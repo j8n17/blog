@@ -75,7 +75,7 @@ LCEL의 모든 객체는 `Runnable` 프로토콜을 따른다. 이 프로토콜�
   * `stream` / `astream`: LLM이 생성하는 결과를 실시간 스트리밍 형태로 받아볼 수 있게 한다.
   * `astream_log`: 최종 결과뿐만 아니라 각 중간 단계의 결과까지 스트리밍하여 디버깅 및 로깅에 유용하다.
 
-### 데이터 처리를 위한 Runnable
+### 입력 데이터 처리를 위한 Runnable
 
 #### RunnablePassthrough
 - 입력값을 그대로 다음 단계로 전달하거나, 필요에 따라 asign 메서드를 사용해 키/값을 추가할 수 있는 Runnable 객체.
@@ -128,3 +128,10 @@ LCEL은 두 가지 주요한 조합 방식을 제공하여 복잡한 워크플�
   combined.invoke({"country": "대한민국"})
   # {'capital': '서울입니다.', 'area': '대한민국의 총 면적은 약 100,363 km²입니다.'}
   ```
+
+### 그 외의 Runnable
+
+- 후처리를 위한 `OutputParser`
+- 조건에 따라 동적으로 Runnable을 선택할 수 있도록 하는 `RunnableBranch`
+- 외부 API, 데이터베이스, 파일 시스템 등과 연동하여 데이터를 가져오거나 처리하는 `RunnableTool`
+- 실행 과정에서 이벤트를 감지하거나, 커스텀 로깅/모니터링 할 수 있는 `RunnableWithListeners`
